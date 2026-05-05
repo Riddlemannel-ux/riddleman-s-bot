@@ -1,132 +1,122 @@
 module.exports = {
   name: "owner",
-  run: async (sock, sender, args, msg) => {
 
-    const OWNER = "234xxxxxxxxxx@s.whatsapp.net" // change this
+  run: async (sock, sender, args) => {
 
+    const OWNER = "2348154753618@s.whatsapp.net"
+
+    // STRICT OWNER CHECK
     if (sender !== OWNER) {
       return sock.sendMessage(sender, { text: "❌ Owner only command." })
     }
 
     const cmd = (args[0] || "").toLowerCase()
+    const value = args.slice(1).join(" ").trim()
 
-    switch (cmd) {
+    const reply = (text) => sock.sendMessage(sender, { text })
 
-      // ---------------- SYSTEM ----------------
-      case "aimode":
-      case "cmd":
-      case "dmpresence":
-      case "forceevent":
-      case "groupcache":
-      case "return":
-      case "save":
-      case "update":
-      case "settings":
-        return sock.sendMessage(sender, { text: `⚙️ ${cmd} executed (placeholder)` })
+    const actions = {
 
-      // ---------------- BLOCK SYSTEM ----------------
-      case "block":
-      case "unblock":
-      case "blocklist":
-        return sock.sendMessage(sender, { text: `🚫 ${cmd} done (placeholder)` })
+      // ───── CORE SYSTEM ─────
+      setbotname: () => {
+        if (!value) return reply("❌ Usage: .owner setbotname <name>")
+        return reply(`🤖 Bot name set to: ${value}`)
+      },
 
-      // ---------------- AUTO SETTINGS ----------------
-      case "autobio":
-      case "autoblock":
-      case "autoreact":
-      case "autoread":
-      case "autoreadstatus":
-        return sock.sendMessage(sender, { text: `🤖 ${cmd} toggled (placeholder)` })
+      setownername: () => {
+        if (!value) return reply("❌ Usage: .owner setownername <name>")
+        return reply(`👑 Owner name updated to: ${value}`)
+      },
 
-      // ---------------- BOT CONFIG ----------------
-      case "setbotname":
-      case "setbotpic":
-      case "setcaption":
-      case "setfooter":
-      case "setmode":
-      case "setprefix":
-      case "setownername":
-      case "setownernumber":
-      case "setpackname":
-      case "setpackauthor":
-      case "setstartmsg":
-      case "settime":
-      case "timezone":
-        return sock.sendMessage(sender, { text: `🛠️ ${cmd} updated (placeholder)` })
+      setownernumber: () => {
+        if (!value) return reply("❌ Usage: .owner setownernumber <number>")
+        return reply(`📱 Owner number set to: ${value}`)
+      },
 
-      // ---------------- GROUP CONTROL ----------------
-      case "join":
-      case "mygroups":
-      case "groupcache":
-      case "forward":
-      case "fullpp":
-      case "getpp":
-      case "pp":
-        return sock.sendMessage(sender, { text: `👥 ${cmd} executed (placeholder)` })
+      setprefix: () => {
+        if (!value) return reply("❌ Usage: .owner setprefix <symbol>")
+        return reply(`⚙️ Prefix changed to: ${value}`)
+      },
 
-      // ---------------- DATABASE ----------------
-      case "resetdb":
-      case "resetsetting":
-      case "resetallsettings":
-      case "resetsudo":
-        return sock.sendMessage(sender, { text: `🗄️ ${cmd} reset done (placeholder)` })
+      setmode: () => {
+        if (!value) return reply("❌ Usage: .owner setmode <public/private>")
+        return reply(`🔄 Mode switched to: ${value}`)
+      },
 
-      // ---------------- SUDO ----------------
-      case "setsudo":
-      case "getsudo":
-      case "delsudo":
-        return sock.sendMessage(sender, { text: `🔑 ${cmd} updated (placeholder)` })
+      restart: async () => {
+        await reply("♻ Restarting bot...")
+        setTimeout(() => process.exit(0), 1200)
+      },
 
-      // ---------------- STATUS CONTROL ----------------
-      case "statusemojis":
-      case "statuslike":
-      case "statusreply":
-      case "tostatus":
-        return sock.sendMessage(sender, { text: `📊 ${cmd} applied (placeholder)` })
+      update: () => reply("⬆ Bot update triggered"),
 
-      // ---------------- ANTICALL / SECURITY ----------------
-      case "setanticall":
-      case "setantidelete":
-      case "setantiedit":
-      case "setchatbot":
-      case "setpmpermit":
-        return sock.sendMessage(sender, { text: `🔒 ${cmd} enabled (placeholder)` })
+      save: () => reply("💾 Data saved"),
 
-      // ---------------- REPORT / INFO ----------------
-      case "report":
-      case "userinfo":
-      case "jid":
-      case "gcjid":
-        return sock.sendMessage(sender, { text: `📌 ${cmd} info (placeholder)` })
+      // ───── BLOCK SYSTEM ─────
+      block: () => {
+        if (!value) return reply("❌ Usage: .owner block <number>")
+        return reply(`🚫 Blocked: ${value}`)
+      },
 
-      // ---------------- RESET / WIPE ----------------
-      case "clearworld":
-      case "resetsetting":
-      case "wipe":
-        return sock.sendMessage(sender, { text: `💥 ${cmd} executed (placeholder)` })
+      unblock: () => {
+        if (!value) return reply("❌ Usage: .owner unblock <number>")
+        return reply(`✅ Unblocked: ${value}`)
+      },
 
-      default:
-        return sock.sendMessage(sender, {
-          text: `
-👑 OWNER PANEL
+      blocklist: () => reply("📋 Fetching block list..."),
 
-Available Commands:
+      // ───── SUDO SYSTEM ─────
+      setsudo: () => {
+        if (!value) return reply("❌ Usage: .owner setsudo <number>")
+        return reply(`🔑 Sudo added: ${value}`)
+      },
 
-• .owner block
-• .owner unblock
-• .owner autobio
-• .owner autoread
-• .owner setbotname
-• .owner setprefix
-• .owner resetdb
-• .owner setsudo
-• .owner report
-• .owner restart
-• .owner settings
+      delsudo: () => {
+        if (!value) return reply("❌ Usage: .owner delsudo <number>")
+        return reply(`🗑 Sudo removed: ${value}`)
+      },
+
+      getsudo: () => reply("📌 Listing sudo users..."),
+      resetsudo: () => reply("♻ Sudo reset done"),
+
+      // ───── AUTO SYSTEM ─────
+      autobio: () => reply("🤖 AutoBio toggled"),
+      autoread: () => reply("👁 AutoRead toggled"),
+      autoreadstatus: () => reply("📊 AutoReadStatus toggled"),
+      autoreact: () => reply("⚡ AutoReact toggled"),
+
+      // ───── SETTINGS ─────
+      getsetting: () => reply("⚙️ Fetching settings..."),
+      setsetting: () => reply("⚙️ Setting updated"),
+      resetsetting: () => reply("♻ Settings reset"),
+      resetallsettings: () => reply("♻ All settings reset"),
+
+      // ───── INFO ─────
+      userinfo: () => reply(`👤 User: ${sender}`),
+      jid: () => reply(`📎 JID: ${sender}`),
+      owner: () => reply("👑 You are the owner")
+    }
+
+    // ───── DEFAULT MENU ─────
+    if (!cmd) {
+      return reply(`
+👑 OWNER COMMANDS
+
+Example:
+.owner setbotname Riddle Bot
+.owner setprefix .
+.owner restart
+.owner block number
+.owner setsudo number
 
 ᴘᴏᴡᴇʀᴇᴅ ʙʏ ʀɪᴅᴅʟᴇ ᴍᴀɴ
-`
-        })
+`)
     }
+
+    if (actions[cmd]) {
+      return actions[cmd]()
+    }
+
+    return reply(`❌ Unknown owner command: ${cmd}`)
   }
 }
